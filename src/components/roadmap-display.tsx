@@ -102,49 +102,140 @@ function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: Generat
 export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
   const [openStep, setOpenStep] = useState<number | null>(0);
   const [isDownloading, setIsDownloading] = useState(false);
-  const roadmapRef = useRef<HTMLDivElement>(null);
-
+  
   const handleToggle = (index: number) => {
     setOpenStep(openStep === index ? null : index);
   };
   
   const handleDownload = async () => {
-    if (!roadmapRef.current) return;
     setIsDownloading(true);
+    try {
+      const doc = new jsPDF({ orientation: 'p', unit: 'px', format: 'a4' });
+      doc.setFont('Inter', 'normal');
 
-    // Temporarily set all steps to open for capture
-    const originalOpenStep = openStep;
-    setOpenStep(-1); // Use a value that opens all steps, assuming we implement that logic, or we do it manually. For now, let's just capture what's visible. A better way would be to render all steps open.
-    
-    // The timeout gives React a moment to re-render with all steps open
-    setTimeout(async () => {
-      try {
-        const canvas = await html2canvas(roadmapRef.current!, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: null, 
+      // --- Use browser colors ---
+      const rootStyles = getComputedStyle(document.documentElement);
+      const colors = {
+          primary: rootStyles.getPropertyValue('--primary').trim(),
+          foreground: rootStyles.getPropertyValue('--foreground').trim(),
+          mutedForeground: rootStyles.getPropertyValue('--muted-foreground').trim(),
+          accent: rootStyles.getPropertyValue('--accent').trim(),
+      };
+      
+      const toHex = (hsl: string) => {
+          const [h, s, l] = hsl.split(' ').map(parseFloat);
+          const s_norm = s / 100;
+          const l_norm = l / 100;
+          const c = (1 - Math.abs(2 * l_norm - 1)) * s_norm;
+          const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+          const m = l_norm - c / 2;
+          let r = 0, g = 0, b = 0;
+          if (0 <= h && h < 60) { [r, g, b] = [c, x, 0]; }
+          else if (60 <= h && h < 120) { [r, g, b] = [x, c, 0]; }
+          else if (120 <= h && h < 180) { [r, g, b] = [0, c, x]; }
+          else if (180 <= h && h < 240) { [r, g, b] = [0, x, c]; }
+          else if (240 <= h && h < 300) { [r, g, b] = [x, 0, c]; }
+          else if (300 <= h && h < 360) { [r, g, b] = [c, 0, x]; }
+          r = Math.round((r + m) * 255);
+          g = Math.round((g + m) * 255);
+          b = Math.round((b + m) * 255);
+          return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+      };
+      const hexColors = {
+          primary: toHex(colors.primary),
+          foreground: toHex(colors.foreground),
+          mutedForeground: toHex(colors.mutedForeground),
+          accent: toHex(colors.accent),
+      };
+      // --- End color conversion ---
+      
+      let y = 40;
+      const pageHeight = doc.internal.pageSize.height;
+      const margin = 40;
+      const maxWidth = doc.internal.pageSize.width - margin * 2;
+
+      const addPageIfNeeded = (yPos: number) => {
+        if (yPos > pageHeight - margin) {
+          doc.addPage();
+          return margin;
+        }
+        return yPos;
+      };
+
+      doc.setFontSize(22);
+      doc.setFont('Inter', 'bold');
+      doc.setTextColor(hexColors.primary);
+      doc.text("Your Personalized Learning Roadmap", margin, y);
+      y += 40;
+      
+      doc.setFont('Inter', 'normal');
+
+      roadmap.skillsRoadmap.forEach((skill, index) => {
+        y = addPageIfNeeded(y);
+        
+        doc.setFontSize(16);
+        doc.setFont('Inter', 'bold');
+        doc.setTextColor(hexColors.foreground);
+        const skillTitle = `${index + 1}. ${skill.skillName}`;
+        doc.text(skillTitle, margin, y);
+        y += 20;
+
+        doc.setFontSize(10);
+        doc.setTextColor(hexColors.mutedForeground);
+        const descriptionLines = doc.splitTextToSize(skill.skillDescription, maxWidth);
+        doc.text(descriptionLines, margin, y);
+        y += (descriptionLines.length * 12) + 10;
+        
+        y = addPageIfNeeded(y);
+
+        // Learning Plan
+        doc.setFontSize(12);
+        doc.setFont('Inter', 'bold');
+        doc.setTextColor(hexColors.accent);
+        doc.text("Step-by-Step Learning Plan", margin, y);
+        y += 20;
+
+        doc.setFontSize(10);
+        doc.setTextColor(hexColors.foreground);
+        skill.learningSteps.forEach(step => {
+          y = addPageIfNeeded(y);
+          const stepLines = doc.splitTextToSize(`- ${step}`, maxWidth - 10);
+          doc.text(stepLines, margin + 10, y);
+          y += (stepLines.length * 12) + 5;
         });
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'px',
-          format: [canvas.width, canvas.height]
+        
+        y += 10;
+        y = addPageIfNeeded(y);
+
+        // Learning Resources
+        doc.setFontSize(12);
+        doc.setFont('Inter', 'bold');
+        doc.setTextColor(hexColors.accent);
+        doc.text("Learning Resources", margin, y);
+        y += 20;
+
+        doc.setFontSize(10);
+        const resources = parseResources(skill.learningResources);
+        resources.forEach(resource => {
+          y = addPageIfNeeded(y);
+          doc.setTextColor(hexColors.primary);
+          doc.textWithLink(resource, margin + 10, y, { url: resource });
+          y += 15;
         });
 
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-        pdf.save('skill-roadmap.pdf');
-      } catch (error) {
-        console.error("Error generating PDF:", error);
-      } finally {
-        setIsDownloading(false);
-        // Restore original open step
-        // setOpenStep(originalOpenStep); // This part is tricky as the component might unmount. For now, we'll just focus on the download.
-      }
-    }, 500);
+        y += 20; // Space between roadmap steps
+      });
+
+      doc.save('skill-roadmap.pdf');
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
-    <Card className="w-full bg-card/50 border-border/50" ref={roadmapRef}>
+    <Card className="w-full bg-card/50 border-border/50">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-3 text-2xl">
           <GraduationCap className="h-7 w-7 text-primary" />
@@ -172,7 +263,7 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
               skill={skill} 
               index={index} 
               total={roadmap.skillsRoadmap.length}
-              isOpen={openStep === index || openStep === -1} // The -1 is for the PDF capture
+              isOpen={openStep === index}
               onToggle={() => handleToggle(index)}
             />
           ))}
