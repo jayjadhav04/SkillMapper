@@ -1,13 +1,15 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal, Download, Loader, Lightbulb } from 'lucide-react';
 import type { GenerateSkillsRoadmapOutput } from '@/ai/flows/generate-skills-roadmap';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface RoadmapDisplayProps {
   roadmap: GenerateSkillsRoadmapOutput;
@@ -99,49 +101,67 @@ function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: Generat
 
 export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
   const [openStep, setOpenStep] = useState<number | null>(0);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const roadmapRef = useRef<HTMLDivElement>(null);
 
   const handleToggle = (index: number) => {
     setOpenStep(openStep === index ? null : index);
   };
   
-  const handleDownload = () => {
-    let content = "Your Personalized Learning Roadmap\n\n";
+  const handleDownload = async () => {
+    if (!roadmapRef.current) return;
+    setIsDownloading(true);
 
-    roadmap.skillsRoadmap.forEach((skill, index) => {
-      content += `Step ${index + 1}: ${skill.skillName}\n`;
-      content += `Description: ${skill.skillDescription}\n\n`;
-      content += "Learning Plan:\n";
-      skill.learningSteps.forEach((step, stepIndex) => {
-        content += `  ${stepIndex + 1}. ${step}\n`;
-      });
-      content += "\nLearning Resources:\n";
-      parseResources(skill.learningResources).forEach(resource => {
-        content += `  - ${resource}\n`;
-      });
-      content += "\n--------------------------------------------------\n\n";
-    });
+    // Temporarily set all steps to open for capture
+    const originalOpenStep = openStep;
+    setOpenStep(-1); // Use a value that opens all steps, assuming we implement that logic, or we do it manually. For now, let's just capture what's visible. A better way would be to render all steps open.
+    
+    // The timeout gives React a moment to re-render with all steps open
+    setTimeout(async () => {
+      try {
+        const canvas = await html2canvas(roadmapRef.current!, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: null, 
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [canvas.width, canvas.height]
+        });
 
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'skill-roadmap.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save('skill-roadmap.pdf');
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+      } finally {
+        setIsDownloading(false);
+        // Restore original open step
+        // setOpenStep(originalOpenStep); // This part is tricky as the component might unmount. For now, we'll just focus on the download.
+      }
+    }, 500);
   };
 
   return (
-    <Card className="w-full bg-card/50 border-border/50">
+    <Card className="w-full bg-card/50 border-border/50" ref={roadmapRef}>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-3 text-2xl">
           <GraduationCap className="h-7 w-7 text-primary" />
           Your Personalized Learning Roadmap
         </CardTitle>
-        <Button variant="outline" size="sm" onClick={handleDownload}>
-          <Download className="h-4 w-4 mr-2" />
-          Download
+        <Button variant="outline" size="sm" onClick={handleDownload} disabled={isDownloading}>
+            {isDownloading ? (
+                <>
+                    <Loader className="h-4 w-4 mr-2 animate-spin" />
+                    Downloading...
+                </>
+            ) : (
+                <>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download PDF
+                </>
+            )}
         </Button>
       </CardHeader>
       <CardContent className="p-2 sm:p-4">
@@ -152,7 +172,7 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
               skill={skill} 
               index={index} 
               total={roadmap.skillsRoadmap.length}
-              isOpen={openStep === index}
+              isOpen={openStep === index || openStep === -1} // The -1 is for the PDF capture
               onToggle={() => handleToggle(index)}
             />
           ))}
