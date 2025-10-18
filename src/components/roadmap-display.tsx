@@ -23,39 +23,45 @@ const parseResources = (resources: string) => {
 function FutureScopeAnalysis({ futureScope }: { futureScope: GenerateSkillsRoadmapOutput['futureScope'] }) {
   const { isSecure, analysis, alternativeGoals } = futureScope;
   const Icon = isSecure ? Shield : ShieldAlert;
-  const alertVariant = isSecure ? 'default' : 'destructive';
+  const cardBorderColor = isSecure ? 'border-green-500/30' : 'border-destructive/30';
+  const iconColor = isSecure ? 'text-green-500' : 'text-destructive';
 
   return (
     <div className="mb-8">
-      <Card className="bg-card/70 border-border/70">
+      <Card className={cn("bg-card/70 border-2", cardBorderColor)}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-3 text-2xl">
-            <TrendingUp className="h-7 w-7 text-primary" />
+          <CardTitle className="flex items-center gap-3 text-xl">
+            <TrendingUp className="h-6 w-6 text-primary" />
             Future Scope Analysis
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <Alert variant={alertVariant} className="mb-6">
-            <Icon className="h-4 w-4" />
-            <AlertTitle className="font-semibold">
-              {isSecure ? "This career path appears to have a secure future." : "This career path may have some future risks."}
-            </AlertTitle>
-            <AlertDescription asChild>
-                <ul className="list-disc pl-5 space-y-1 mt-2">
-                    {analysis.map((point, index) => <li key={index}>{point}</li>)}
-                </ul>
-            </AlertDescription>
-          </Alert>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+          <div>
+              <div className="flex items-center gap-2 mb-4">
+                  <Icon className={cn("h-5 w-5", iconColor)} />
+                  <h4 className="font-semibold text-card-foreground">
+                      {isSecure ? "Career Outlook: Promising" : "Career Outlook: Potential Risks"}
+                  </h4>
+              </div>
+              <ul className="space-y-2">
+                  {analysis.map((point, index) => (
+                      <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                          <span>{point}</span>
+                      </li>
+                  ))}
+              </ul>
+          </div>
           
           {!isSecure && alternativeGoals && alternativeGoals.length > 0 && (
-            <div>
-              <h4 className="font-semibold text-card-foreground mb-3 text-md">
-                Consider these alternative career paths:
+            <div className="border-t md:border-t-0 md:border-l border-border/50 pt-6 md:pt-0 md:pl-8">
+              <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2">
+                Alternative Career Paths
               </h4>
               <ul className="space-y-2">
                 {alternativeGoals.map((goal, index) => (
-                  <li key={index} className="flex items-center gap-2 text-card-foreground/90">
-                    <ArrowRight className="h-4 w-4 text-accent" />
+                  <li key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <ArrowRight className="h-4 w-4 text-accent shrink-0" />
                     <span>{goal}</span>
                   </li>
                 ))}
