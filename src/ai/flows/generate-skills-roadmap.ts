@@ -29,6 +29,7 @@ const SkillSchema = z.object({
     .describe(
       'A short summary of why this skill is important for the user\'s career goals.'
     ),
+  learningSteps: z.array(z.string()).describe('A step-by-step plan of what to study to learn this skill, from fundamentals to more advanced topics. Each step should be a concise action item.'),
   learningResources: z
     .string()
     .describe('A comma separated list of URLs to learning resources for the skill.'),
@@ -56,7 +57,12 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateSkillsRoadmapOutputSchema},
   prompt: `You are a career advisor who specializes in creating personalized learning roadmaps.
 
-  Based on the user's current skills and career goals, you will generate a roadmap of the next 3-5 skills they should learn. For each skill, provide a short summary of why it's important for the user's career goals.
+  Based on the user's current skills and career goals, you will generate a roadmap of the next 3-5 skills they should learn.
+
+  For each skill, provide:
+  1. A short summary of why it's important for the user's career goals.
+  2. A step-by-step plan of what to study to learn this skill. Start with the absolute basics and progress to more advanced concepts. Each step should be a clear, actionable instruction.
+  3. A list of comma-separated URLs for learning resources.
 
   Current Skills: {{{currentSkills}}}
   Career Goals: {{{careerGoals}}}

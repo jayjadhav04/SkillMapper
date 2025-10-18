@@ -6,9 +6,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link, GraduationCap } from 'lucide-react';
+import { Link, GraduationCap, BookOpen, CheckCircle2 } from 'lucide-react';
 import type { GenerateSkillsRoadmapOutput } from '@/ai/flows/generate-skills-roadmap';
 
 interface RoadmapDisplayProps {
@@ -41,10 +40,31 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
                   <span className="text-lg font-medium">{skill.skillName}</span>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="pl-[56px] space-y-4">
+              <AccordionContent className="pl-[56px] space-y-6 pt-4">
                  <p className="text-muted-foreground">{skill.skillDescription}</p>
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-muted-foreground">Learning Resources:</h4>
+
+                 <div>
+                  <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    Your Step-by-Step Learning Plan
+                  </h4>
+                  <div className="relative pl-6">
+                    <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-border"></div>
+                    <ul className="space-y-6">
+                      {skill.learningSteps.map((step, stepIndex) => (
+                        <li key={stepIndex} className="relative flex items-start gap-4">
+                           <div className="absolute left-[-18px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary">
+                             <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
+                           </div>
+                          <p className="text-foreground">{step}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-foreground mb-4">Learning Resources:</h4>
                   <ul className="space-y-3">
                     {parseResources(skill.learningResources).map((resource, resIndex) => (
                       <li key={resIndex}>
