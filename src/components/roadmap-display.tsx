@@ -41,7 +41,8 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
                   <span className="text-lg font-medium">{skill.skillName}</span>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="pl-[56px]">
+              <AccordionContent className="pl-[56px] space-y-4">
+                 <p className="text-muted-foreground">{skill.skillDescription}</p>
                 <div className="space-y-4">
                   <h4 className="font-semibold text-muted-foreground">Learning Resources:</h4>
                   <ul className="space-y-3">

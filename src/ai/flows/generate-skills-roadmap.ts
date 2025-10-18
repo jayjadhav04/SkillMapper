@@ -24,6 +24,11 @@ export type GenerateSkillsRoadmapInput = z.infer<
 
 const SkillSchema = z.object({
   skillName: z.string().describe('The name of the skill to learn.'),
+  skillDescription: z
+    .string()
+    .describe(
+      'A short summary of why this skill is important for the user\'s career goals.'
+    ),
   learningResources: z
     .string()
     .describe('A comma separated list of URLs to learning resources for the skill.'),
@@ -51,7 +56,7 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateSkillsRoadmapOutputSchema},
   prompt: `You are a career advisor who specializes in creating personalized learning roadmaps.
 
-  Based on the user's current skills and career goals, you will generate a roadmap of the next 3-5 skills they should learn.
+  Based on the user's current skills and career goals, you will generate a roadmap of the next 3-5 skills they should learn. For each skill, provide a short summary of why it's important for the user's career goals.
 
   Current Skills: {{{currentSkills}}}
   Career Goals: {{{careerGoals}}}
