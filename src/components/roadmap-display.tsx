@@ -1,10 +1,10 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal, Download } from 'lucide-react';
+import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal, Download, Loader, Lightbulb } from 'lucide-react';
 import type { GenerateSkillsRoadmapOutput } from '@/ai/flows/generate-skills-roadmap';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -162,30 +162,36 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
   );
 }
 
+const quotes = [
+    "The beautiful thing about learning is that nobody can take it away from you.",
+    "Live as if you were to die tomorrow. Learn as if you were to live forever.",
+    "The expert in anything was once a beginner.",
+    "An investment in knowledge pays the best interest.",
+    "The only way to do great work is to love what you do.",
+    "Success is the sum of small efforts, repeated day in and day out.",
+    "The future belongs to those who believe in the beauty of their dreams.",
+    "It does not matter how slowly you go as long as you do not stop.",
+    "The journey of a thousand miles begins with a single step.",
+];
+
 export function RoadmapSkeleton() {
+  const [quote, setQuote] = useState('');
+
+  useEffect(() => {
+    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+  }, []);
+
   return (
-    <Card className="w-full bg-card/50">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-3">
-            <Skeleton className="h-7 w-7 rounded-full" />
-            <Skeleton className="h-7 w-1/2" />
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 sm:p-6">
-        <div className="space-y-4">
-          {[...Array(3)].map((_, index) => (
-            <Card key={index} className="p-6">
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <div className="space-y-2 flex-grow">
-                   <Skeleton className="h-6 w-1/3" />
-                   <Skeleton className="h-4 w-2/3" />
-                </div>
-              </div>
-            </Card>
-          ))}
+    <div className="w-full flex flex-col items-center justify-center text-center p-8 rounded-lg bg-card/50 border-border/50">
+        <div className="relative mb-6">
+            <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center animate-pulse">
+                <Lightbulb className="h-8 w-8 text-primary" />
+            </div>
         </div>
-      </CardContent>
-    </Card>
+        <h3 className="text-xl font-semibold text-foreground mb-2">Crafting your learning path...</h3>
+        <p className="text-muted-foreground max-w-md">
+            &ldquo;{quote}&rdquo;
+        </p>
+    </div>
   );
 }
