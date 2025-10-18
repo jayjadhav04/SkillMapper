@@ -114,9 +114,9 @@ export function RoadmapGenerator() {
                 />
               </div>
               <div className="flex justify-end">
-                <Button type="submit" disabled={isLoading} size="lg" className="w-full sm:w-auto">
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  {isLoading ? 'Generating Your Roadmap...' : 'Generate Roadmap'}
+                <Button type="submit" disabled={isLoading} size="lg" className="w-full sm:w-auto transform transition-transform hover:scale-105 active:scale-100">
+                  <Sparkles className={`mr-2 h-5 w-5 ${!isLoading && 'group-hover:animate-pulse'}`} />
+                  {isLoading ? 'Charting Your Course...' : 'Chart My Course'}
                 </Button>
               </div>
             </form>
