@@ -51,14 +51,18 @@ export function RoadmapGenerator() {
     setRoadmap(null);
     setError(null);
 
-    const result = await getSkillsRoadmap(values);
-
-    if (result.error) {
-      setError(result.error);
-    } else {
-      setRoadmap(result.data);
+    try {
+      const result = await getSkillsRoadmap(values);
+      if (!result || !result.skillsRoadmap || result.skillsRoadmap.length === 0) {
+        setError('Could not generate a roadmap. Try adjusting your input.');
+      } else {
+        setRoadmap(result);
+      }
+    } catch (e: any) {
+        setError(e.message || 'An unexpected error occurred. Please try again later.');
+    } finally {
+        setIsLoading(false);
     }
-    setIsLoading(false);
   }
 
   return (
