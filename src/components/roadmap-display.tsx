@@ -1,24 +1,108 @@
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+'use client';
+
+import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal } from 'lucide-react';
 import type { GenerateSkillsRoadmapOutput } from '@/ai/flows/generate-skills-roadmap';
+import { cn } from '@/lib/utils';
+import { Button } from './ui/button';
 
 interface RoadmapDisplayProps {
   roadmap: GenerateSkillsRoadmapOutput;
 }
 
-export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
+const parseResources = (resources: string) => {
+  return resources.split(',').map(link => link.trim()).filter(link => link);
+}
 
-  const parseResources = (resources: string) => {
-    return resources.split(',').map(link => link.trim()).filter(link => link);
-  }
+function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: GenerateSkillsRoadmapOutput['skillsRoadmap'][0], index: number, total: number, isOpen: boolean, onToggle: () => void }) {
+  return (
+    <div className="relative pl-8 sm:pl-12 py-6 group">
+      {/* Vertical line */}
+      <div className={cn(
+        "absolute top-0 left-4 sm:left-6 w-px h-full bg-border",
+        index === 0 && "top-6",
+        index === total - 1 && "h-6"
+      )}></div>
+      
+      {/* Step circle */}
+      <div className={cn(
+        "absolute top-6 left-[-1px] sm:left-1.5 flex items-center justify-center w-10 h-10 rounded-full bg-card border-2 font-bold text-lg",
+        isOpen ? "bg-primary text-primary-foreground border-primary" : "bg-background border-border"
+      )}>
+        {index + 1}
+      </div>
+
+      <Card 
+        className={cn(
+            "overflow-hidden transition-all duration-300 ease-in-out",
+            isOpen ? 'bg-card/80' : 'bg-card'
+        )}
+      >
+        <button onClick={onToggle} className="w-full text-left p-4 sm:p-6 cursor-pointer hover:bg-secondary/50 transition-colors">
+          <div className="flex items-center gap-4">
+            <div>
+              <h3 className="text-xl font-semibold text-card-foreground">{skill.skillName}</h3>
+              <p className="text-sm text-muted-foreground mt-1">{skill.skillDescription}</p>
+            </div>
+            <ChevronRight className={cn("ml-auto h-5 w-5 text-muted-foreground transition-transform", isOpen && 'rotate-90')} />
+          </div>
+        </button>
+
+        {isOpen && (
+            <div className="p-4 sm:p-6 border-t border-border space-y-8">
+            <div>
+              <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
+                <Goal className="h-5 w-5 text-accent" />
+                Step-by-Step Learning Plan
+              </h4>
+              <div className="space-y-4">
+                {skill.learningSteps.map((step, stepIndex) => (
+                  <div key={stepIndex} className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                    <p className="text-card-foreground/90">{step}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
+                <BookOpen className="h-5 w-5 text-accent" />
+                Learning Resources
+              </h4>
+              <ul className="space-y-3">
+                {parseResources(skill.learningResources).map((resource, resIndex) => (
+                  <li key={resIndex}>
+                    <a
+                      href={resource}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-primary hover:underline underline-offset-4 transition-colors group"
+                    >
+                      <Link className="h-4 w-4 flex-shrink-0" />
+                      <span className="truncate">{resource}</span>
+                      <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
+  const [openStep, setOpenStep] = useState<number | null>(0);
+
+  const handleToggle = (index: number) => {
+    setOpenStep(openStep === index ? null : index);
+  };
 
   return (
     <Card className="w-full bg-card/50 border-border/50">
@@ -28,65 +112,17 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
           Your Personalized Learning Roadmap
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 sm:p-6">
-        <div className="space-y-4">
+      <CardContent className="p-2 sm:p-4">
+        <div>
           {roadmap.skillsRoadmap.map((skill, index) => (
-            <Card key={index} className="overflow-hidden">
-               <Accordion type="single" collapsible>
-                <AccordionItem value={`item-${index}`} className="border-b-0">
-                  <AccordionTrigger className="p-6 hover:no-underline bg-card hover:bg-secondary/50">
-                    <div className="flex items-center gap-4 text-left">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-xl flex-shrink-0">
-                        {index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-card-foreground">{skill.skillName}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">{skill.skillDescription}</p>
-                      </div>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="p-6 space-y-8 bg-card/80">
-                    <div>
-                      <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
-                        <Goal className="h-5 w-5 text-accent" />
-                        Step-by-Step Learning Plan
-                      </h4>
-                      <div className="space-y-4">
-                        {skill.learningSteps.map((step, stepIndex) => (
-                          <div key={stepIndex} className="flex items-start gap-3">
-                            <CheckCircle2 className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                            <p className="text-card-foreground/90">{step}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
-                        <BookOpen className="h-5 w-5 text-accent" />
-                        Learning Resources
-                      </h4>
-                      <ul className="space-y-3">
-                        {parseResources(skill.learningResources).map((resource, resIndex) => (
-                          <li key={resIndex}>
-                            <a
-                              href={resource}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 text-primary hover:underline underline-offset-4 transition-colors group"
-                            >
-                              <Link className="h-4 w-4 flex-shrink-0" />
-                              <span className="truncate">{resource}</span>
-                              <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </Card>
+            <RoadmapStep 
+              key={index} 
+              skill={skill} 
+              index={index} 
+              total={roadmap.skillsRoadmap.length}
+              isOpen={openStep === index}
+              onToggle={() => handleToggle(index)}
+            />
           ))}
         </div>
       </CardContent>
