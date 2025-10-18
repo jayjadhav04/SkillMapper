@@ -29,7 +29,21 @@ const SkillSchema = z.object({
     .describe(
       'A short summary of why this skill is important for the user\'s career goals.'
     ),
-  learningSteps: z.array(z.string()).describe('A step-by-step plan of what to study to learn this skill, from fundamentals to more advanced topics. Each step should be a concise action item.'),
+  requiredSkills: z
+    .array(z.string())
+    .describe(
+      'A list of prerequisite skills the user should be familiar with before starting.'
+    ),
+  importantLibraries: z
+    .array(z.string())
+    .describe(
+      'A list of important libraries, frameworks, or tools related to this skill.'
+    ),
+  learningSteps: z
+    .array(z.string())
+    .describe(
+      'A step-by-step plan of what to study to learn this skill, from fundamentals to more advanced topics. Each step should be a concise action item.'
+    ),
   learningResources: z
     .string()
     .describe('A comma separated list of URLs to learning resources for the skill.'),
@@ -64,8 +78,10 @@ const prompt = ai.definePrompt({
 
   For each skill, provide:
   1. A short summary of why it's a critical step for the user's career goals.
-  2. A detailed, step-by-step plan of what to study. Start with the absolute basics and progress to more advanced concepts. Each step must be a clear, actionable instruction.
-  3. A list of comma-separated URLs for high-quality learning resources.
+  2. A list of prerequisite skills needed before starting this skill.
+  3. A list of important libraries, frameworks, or tools to focus on.
+  4. A detailed, step-by-step plan of what to study. Start with the absolute basics and progress to more advanced concepts. Each step must be a clear, actionable instruction.
+  5. A list of comma-separated URLs for high-quality learning resources.
 
   Current Skills: {{{currentSkills}}}
   Career Goals: {{{careerGoals}}}

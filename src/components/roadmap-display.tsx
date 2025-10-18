@@ -4,12 +4,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal, Download, Loader, Lightbulb } from 'lucide-react';
+import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal, Download, Loader, Lightbulb, ListChecks, Library } from 'lucide-react';
 import type { GenerateSkillsRoadmapOutput } from '@/ai/flows/generate-skills-roadmap';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Badge } from './ui/badge';
 
 interface RoadmapDisplayProps {
   roadmap: GenerateSkillsRoadmapOutput;
@@ -55,6 +56,33 @@ function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: Generat
 
         {isOpen && (
             <div className="p-4 sm:p-6 border-t border-border space-y-8">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
+                  <ListChecks className="h-5 w-5 text-accent" />
+                  Required Skills
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {skill.requiredSkills.map((reqSkill, reqIndex) => (
+                    <Badge key={reqIndex} variant="secondary">{reqSkill}</Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
+                  <Library className="h-5 w-5 text-accent" />
+                  Important Libraries & Tools
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {skill.importantLibraries.map((lib, libIndex) => (
+                    <Badge key={libIndex} variant="secondary">{lib}</Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
             <div>
               <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
                 <Goal className="h-5 w-5 text-accent" />
@@ -123,7 +151,8 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
       };
       
       const toHex = (hsl: string) => {
-          const [h, s, l] = hsl.split(' ').map(parseFloat);
+          if (!hsl) return '#000000';
+          const [h, s, l] = hsl.split(' ').map(val => parseFloat(val));
           const s_norm = s / 100;
           const l_norm = l / 100;
           const c = (1 - Math.abs(2 * l_norm - 1)) * s_norm;
@@ -184,9 +213,42 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
         doc.setTextColor(hexColors.mutedForeground);
         const descriptionLines = doc.splitTextToSize(skill.skillDescription, maxWidth);
         doc.text(descriptionLines, margin, y);
-        y += (descriptionLines.length * 12) + 10;
+        y += (descriptionLines.length * 12) + 20;
         
         y = addPageIfNeeded(y);
+        
+        // Required Skills
+        doc.setFontSize(12);
+        doc.setFont('Inter', 'bold');
+        doc.setTextColor(hexColors.accent);
+        doc.text("Required Skills", margin, y);
+        y += 20;
+        doc.setFontSize(10);
+        doc.setTextColor(hexColors.foreground);
+        skill.requiredSkills.forEach(reqSkill => {
+            y = addPageIfNeeded(y);
+            doc.text(`- ${reqSkill}`, margin + 10, y);
+            y+=15;
+        });
+        y += 10;
+        y = addPageIfNeeded(y);
+
+        // Important Libraries
+        doc.setFontSize(12);
+        doc.setFont('Inter', 'bold');
+        doc.setTextColor(hexColors.accent);
+        doc.text("Important Libraries & Tools", margin, y);
+        y += 20;
+        doc.setFontSize(10);
+        doc.setTextColor(hexColors.foreground);
+        skill.importantLibraries.forEach(lib => {
+            y = addPageIfNeeded(y);
+            doc.text(`- ${lib}`, margin + 10, y);
+            y+=15;
+        });
+        y += 10;
+        y = addPageIfNeeded(y);
+
 
         // Learning Plan
         doc.setFontSize(12);
