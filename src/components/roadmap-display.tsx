@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/accordion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link, GraduationCap, BookOpen, CheckCircle2 } from 'lucide-react';
+import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal } from 'lucide-react';
 import type { GenerateSkillsRoadmapOutput } from '@/ai/flows/generate-skills-roadmap';
 
 interface RoadmapDisplayProps {
@@ -21,70 +21,74 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-card/50 border-border/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-3">
-          <GraduationCap className="h-6 w-6 text-primary" />
+        <CardTitle className="flex items-center gap-3 text-2xl">
+          <GraduationCap className="h-7 w-7 text-primary" />
           Your Personalized Learning Roadmap
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
+      <CardContent className="p-4 sm:p-6">
+        <div className="space-y-4">
           {roadmap.skillsRoadmap.map((skill, index) => (
-            <AccordionItem value={`item-${index}`} key={index}>
-              <AccordionTrigger className="hover:no-underline">
-                <div className="flex items-center gap-4 text-left">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg flex-shrink-0">
-                    {index + 1}
-                  </div>
-                  <span className="text-lg font-medium">{skill.skillName}</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pl-[56px] space-y-6 pt-4">
-                 <p className="text-muted-foreground">{skill.skillDescription}</p>
+            <Card key={index} className="overflow-hidden">
+               <Accordion type="single" collapsible>
+                <AccordionItem value={`item-${index}`} className="border-b-0">
+                  <AccordionTrigger className="p-6 hover:no-underline bg-card hover:bg-secondary/50">
+                    <div className="flex items-center gap-4 text-left">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-xl flex-shrink-0">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-card-foreground">{skill.skillName}</h3>
+                        <p className="text-sm text-muted-foreground mt-1">{skill.skillDescription}</p>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="p-6 space-y-8 bg-card/80">
+                    <div>
+                      <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
+                        <Goal className="h-5 w-5 text-accent" />
+                        Step-by-Step Learning Plan
+                      </h4>
+                      <div className="space-y-4">
+                        {skill.learningSteps.map((step, stepIndex) => (
+                          <div key={stepIndex} className="flex items-start gap-3">
+                            <CheckCircle2 className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                            <p className="text-card-foreground/90">{step}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                 <div>
-                  <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-primary" />
-                    Your Step-by-Step Learning Plan
-                  </h4>
-                  <div className="relative pl-6">
-                    <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-border"></div>
-                    <ul className="space-y-6">
-                      {skill.learningSteps.map((step, stepIndex) => (
-                        <li key={stepIndex} className="relative flex items-start gap-4">
-                           <div className="absolute left-[-18px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary">
-                             <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
-                           </div>
-                          <p className="text-foreground">{step}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold text-foreground mb-4">Learning Resources:</h4>
-                  <ul className="space-y-3">
-                    {parseResources(skill.learningResources).map((resource, resIndex) => (
-                      <li key={resIndex}>
-                        <a
-                          href={resource}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-primary hover:underline underline-offset-4 transition-colors"
-                        >
-                          <Link className="h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">{resource}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+                    <div>
+                      <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
+                        <BookOpen className="h-5 w-5 text-accent" />
+                        Learning Resources
+                      </h4>
+                      <ul className="space-y-3">
+                        {parseResources(skill.learningResources).map((resource, resIndex) => (
+                          <li key={resIndex}>
+                            <a
+                              href={resource}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-primary hover:underline underline-offset-4 transition-colors group"
+                            >
+                              <Link className="h-4 w-4 flex-shrink-0" />
+                              <span className="truncate">{resource}</span>
+                              <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </Card>
           ))}
-        </Accordion>
+        </div>
       </CardContent>
     </Card>
   );
@@ -92,22 +96,25 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
 
 export function RoadmapSkeleton() {
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-card/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-3">
-            <Skeleton className="h-6 w-6 rounded-full" />
-            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-7 w-7 rounded-full" />
+            <Skeleton className="h-7 w-1/2" />
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6">
         <div className="space-y-4">
-          {[...Array(4)].map((_, index) => (
-            <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
-              <Skeleton className="h-10 w-10 rounded-full" />
-              <div className="space-y-2 flex-grow">
-                 <Skeleton className="h-5 w-1/3" />
+          {[...Array(3)].map((_, index) => (
+            <Card key={index} className="p-6">
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="space-y-2 flex-grow">
+                   <Skeleton className="h-6 w-1/3" />
+                   <Skeleton className="h-4 w-2/3" />
+                </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </CardContent>

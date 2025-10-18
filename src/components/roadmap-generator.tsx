@@ -63,21 +63,21 @@ export function RoadmapGenerator() {
 
   return (
     <div className="flex flex-col gap-8 md:gap-12">
-      <Card>
-        <CardContent className="p-6">
+      <Card className="bg-card/50 border-border/50">
+        <CardContent className="p-6 md:p-8">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-8">
                 <FormField
                   control={form.control}
                   name="currentSkills"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Your Current Skills</FormLabel>
+                      <FormLabel className="text-lg font-semibold">Your Current Skills</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="e.g., Python, HTML, Communication"
-                          className="min-h-[100px] resize-y"
+                          className="min-h-[120px] resize-y text-base"
                           {...field}
                         />
                       </FormControl>
@@ -93,11 +93,11 @@ export function RoadmapGenerator() {
                   name="careerGoals"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg">Your Career Goals</FormLabel>
+                      <FormLabel className="text-lg font-semibold">Your Career Goals</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="e.g., Become a mobile app developer"
-                          className="min-h-[100px] resize-y"
+                          placeholder="e.g., Become a full-stack web developer specializing in AI applications."
+                          className="min-h-[120px] resize-y text-base"
                           {...field}
                         />
                       </FormControl>
@@ -109,10 +109,12 @@ export function RoadmapGenerator() {
                   )}
                 />
               </div>
-              <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto">
-                <Sparkles className="mr-2 h-4 w-4" />
-                {isLoading ? 'Generating...' : 'Generate Roadmap'}
-              </Button>
+              <div className="flex justify-end">
+                <Button type="submit" disabled={isLoading} size="lg" className="w-full sm:w-auto">
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  {isLoading ? 'Generating Your Roadmap...' : 'Generate Roadmap'}
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
