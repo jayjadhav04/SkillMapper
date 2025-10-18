@@ -1,11 +1,15 @@
 import { RoadmapGenerator } from '@/components/roadmap-generator';
+import { ThemeToggleButton } from '@/components/theme-toggle-button';
 import { Map } from 'lucide-react';
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center p-4 sm:p-8 md:p-12">
       <div className="w-full max-w-4xl">
-        <header className="flex flex-col items-center text-center mb-10 md:mb-16">
+        <header className="flex flex-col items-center text-center mb-10 md:mb-16 relative">
+           <div className="absolute top-0 right-0">
+             <ThemeToggleButton />
+           </div>
           <div className="bg-primary/10 p-4 rounded-full mb-4 border-2 border-primary/20 shadow-lg">
             <Map className="h-10 w-10 text-primary" />
           </div>

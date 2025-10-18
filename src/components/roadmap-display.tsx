@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal } from 'lucide-react';
+import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal, Download } from 'lucide-react';
 import type { GenerateSkillsRoadmapOutput } from '@/ai/flows/generate-skills-roadmap';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -103,14 +103,46 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
   const handleToggle = (index: number) => {
     setOpenStep(openStep === index ? null : index);
   };
+  
+  const handleDownload = () => {
+    let content = "Your Personalized Learning Roadmap\n\n";
+
+    roadmap.skillsRoadmap.forEach((skill, index) => {
+      content += `Step ${index + 1}: ${skill.skillName}\n`;
+      content += `Description: ${skill.skillDescription}\n\n`;
+      content += "Learning Plan:\n";
+      skill.learningSteps.forEach((step, stepIndex) => {
+        content += `  ${stepIndex + 1}. ${step}\n`;
+      });
+      content += "\nLearning Resources:\n";
+      parseResources(skill.learningResources).forEach(resource => {
+        content += `  - ${resource}\n`;
+      });
+      content += "\n--------------------------------------------------\n\n";
+    });
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'skill-roadmap.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <Card className="w-full bg-card/50 border-border/50">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-3 text-2xl">
           <GraduationCap className="h-7 w-7 text-primary" />
           Your Personalized Learning Roadmap
         </CardTitle>
+        <Button variant="outline" size="sm" onClick={handleDownload}>
+          <Download className="h-4 w-4 mr-2" />
+          Download
+        </Button>
       </CardHeader>
       <CardContent className="p-2 sm:p-4">
         <div>
