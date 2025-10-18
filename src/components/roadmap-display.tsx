@@ -4,12 +4,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal, Download, Loader, Lightbulb, ListChecks, Library } from 'lucide-react';
+import { Link, GraduationCap, BookOpen, CheckCircle2, ChevronRight, Goal, Download, Loader, Lightbulb, ListChecks, Library, TrendingUp, Shield, ShieldAlert, ArrowRight } from 'lucide-react';
 import type { GenerateSkillsRoadmapOutput } from '@/ai/flows/generate-skills-roadmap';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import jsPDF from 'jspdf';
 import { Badge } from './ui/badge';
+import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 
 interface RoadmapDisplayProps {
   roadmap: GenerateSkillsRoadmapOutput;
@@ -17,6 +18,52 @@ interface RoadmapDisplayProps {
 
 const parseResources = (resources: string) => {
   return resources.split(',').map(link => link.trim()).filter(link => link);
+}
+
+function FutureScopeAnalysis({ futureScope }: { futureScope: GenerateSkillsRoadmapOutput['futureScope'] }) {
+  const { isSecure, analysis, alternativeGoals } = futureScope;
+  const Icon = isSecure ? Shield : ShieldAlert;
+  const alertVariant = isSecure ? 'default' : 'destructive';
+
+  return (
+    <div className="mb-8">
+      <Card className="bg-card/70 border-border/70">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3 text-2xl">
+            <TrendingUp className="h-7 w-7 text-primary" />
+            Future Scope Analysis
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Alert variant={alertVariant} className="mb-6">
+            <Icon className="h-4 w-4" />
+            <AlertTitle className="font-semibold">
+              {isSecure ? "This career path appears to have a secure future." : "This career path may have some future risks."}
+            </AlertTitle>
+            <AlertDescription>
+              {analysis}
+            </AlertDescription>
+          </Alert>
+          
+          {!isSecure && alternativeGoals && alternativeGoals.length > 0 && (
+            <div>
+              <h4 className="font-semibold text-card-foreground mb-3 text-md">
+                Consider these alternative career paths:
+              </h4>
+              <ul className="space-y-2">
+                {alternativeGoals.map((goal, index) => (
+                  <li key={index} className="flex items-center gap-2 text-card-foreground/90">
+                    <ArrowRight className="h-4 w-4 text-accent" />
+                    <span>{goal}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: GenerateSkillsRoadmapOutput['skillsRoadmap'][0], index: number, total: number, isOpen: boolean, onToggle: () => void }) {
@@ -309,41 +356,44 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
   };
 
   return (
-    <Card className="w-full bg-card/50 border-border/50">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-3 text-2xl">
-          <GraduationCap className="h-7 w-7 text-primary" />
-          Your Personalized Learning Roadmap
-        </CardTitle>
-        <Button variant="outline" size="sm" onClick={handleDownload} disabled={isDownloading}>
-            {isDownloading ? (
-                <>
-                    <Loader className="h-4 w-4 mr-2 animate-spin" />
-                    Downloading...
-                </>
-            ) : (
-                <>
-                    <Download className="h-4 w-4 mr-2" />
-                    Download PDF
-                </>
-            )}
-        </Button>
-      </CardHeader>
-      <CardContent className="p-2 sm:p-4">
-        <div>
-          {roadmap.skillsRoadmap.map((skill, index) => (
-            <RoadmapStep 
-              key={index} 
-              skill={skill} 
-              index={index} 
-              total={roadmap.skillsRoadmap.length}
-              isOpen={openStep === index}
-              onToggle={() => handleToggle(index)}
-            />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <>
+      {roadmap.futureScope && <FutureScopeAnalysis futureScope={roadmap.futureScope} />}
+      <Card className="w-full bg-card/50 border-border/50">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-3 text-2xl">
+            <GraduationCap className="h-7 w-7 text-primary" />
+            Your Personalized Learning Roadmap
+          </CardTitle>
+          <Button variant="outline" size="sm" onClick={handleDownload} disabled={isDownloading}>
+              {isDownloading ? (
+                  <>
+                      <Loader className="h-4 w-4 mr-2 animate-spin" />
+                      Downloading...
+                  </>
+              ) : (
+                  <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Download PDF
+                  </>
+              )}
+          </Button>
+        </CardHeader>
+        <CardContent className="p-2 sm:p-4">
+          <div>
+            {roadmap.skillsRoadmap.map((skill, index) => (
+              <RoadmapStep 
+                key={index} 
+                skill={skill} 
+                index={index} 
+                total={roadmap.skillsRoadmap.length}
+                isOpen={openStep === index}
+                onToggle={() => handleToggle(index)}
+              />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }
 

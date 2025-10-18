@@ -15,7 +15,7 @@ import {z} from 'genkit';
 const GenerateSkillsRoadmapInputSchema = z.object({
   currentSkills: z
     .string()
-    .describe('A comma separated list of the user\'s current skills.'),
+    .describe("A comma separated list of the user's current skills."),
   careerGoals: z.string().describe('The career goals of the user.'),
 });
 export type GenerateSkillsRoadmapInput = z.infer<
@@ -50,6 +50,11 @@ const SkillSchema = z.object({
 });
 
 const GenerateSkillsRoadmapOutputSchema = z.object({
+  futureScope: z.object({
+    isSecure: z.boolean().describe('Whether or not the career goal is considered a secure path for the future.'),
+    analysis: z.string().describe('A detailed analysis of the future scope of the career goal.'),
+    alternativeGoals: z.array(z.string()).optional().describe('A list of alternative career goals if the original goal is not secure.'),
+  }).describe('An analysis of the future scope of the user\'s career goal.'),
   skillsRoadmap: z.array(SkillSchema).describe(
     'An array of skills the user should learn to achieve their career goals, ordered by priority.'
   ),
@@ -74,7 +79,13 @@ const prompt = ai.definePrompt({
   },
   prompt: `You are a career advisor who specializes in creating personalized learning roadmaps. Your goal is to provide a clear, simple, and easy-to-understand plan.
 
-  Based on the user's current skills and career goals, you will generate a roadmap of the most important skills they should learn next, in a logical order.
+  First, analyze the user's career goal for its long-term viability and future scope. 
+  - Is it a secure career path for the next 5-10 years? 
+  - What is the growth potential?
+  - If the goal is not secure or future-proof, provide a brief analysis explaining why and suggest 2-3 alternative, more secure career goals.
+  - Fill out the 'futureScope' object accordingly.
+
+  Next, based on the user's current skills and career goals, you will generate a roadmap of the most important skills they should learn next, in a logical order.
 
   For each skill, provide:
   1. A short summary of why it's a critical step for the user's career goals.
@@ -86,7 +97,7 @@ const prompt = ai.definePrompt({
   Current Skills: {{{currentSkills}}}
   Career Goals: {{{careerGoals}}}
 
-  Generate the roadmap:`,
+  Generate the analysis and roadmap:`,
 });
 
 const generateSkillsRoadmapFlow = ai.defineFlow(
