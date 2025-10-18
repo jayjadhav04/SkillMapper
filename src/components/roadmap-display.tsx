@@ -40,8 +40,10 @@ function FutureScopeAnalysis({ futureScope }: { futureScope: GenerateSkillsRoadm
             <AlertTitle className="font-semibold">
               {isSecure ? "This career path appears to have a secure future." : "This career path may have some future risks."}
             </AlertTitle>
-            <AlertDescription>
-              {analysis}
+            <AlertDescription asChild>
+                <ul className="list-disc pl-5 space-y-1 mt-2">
+                    {analysis.map((point, index) => <li key={index}>{point}</li>)}
+                </ul>
             </AlertDescription>
           </Alert>
           

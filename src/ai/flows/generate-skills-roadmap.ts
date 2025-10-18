@@ -52,7 +52,7 @@ const SkillSchema = z.object({
 const GenerateSkillsRoadmapOutputSchema = z.object({
   futureScope: z.object({
     isSecure: z.boolean().describe('Whether or not the career goal is considered a secure path for the future.'),
-    analysis: z.string().describe('A detailed analysis of the future scope of the career goal.'),
+    analysis: z.array(z.string()).describe('A list of concise points analyzing the future scope of the career goal.'),
     alternativeGoals: z.array(z.string()).optional().describe('A list of alternative career goals if the original goal is not secure.'),
   }).describe('An analysis of the future scope of the user\'s career goal.'),
   skillsRoadmap: z.array(SkillSchema).describe(
@@ -80,9 +80,10 @@ const prompt = ai.definePrompt({
   prompt: `You are a career advisor who specializes in creating personalized learning roadmaps. Your goal is to provide a clear, simple, and easy-to-understand plan.
 
   First, analyze the user's career goal for its long-term viability and future scope. 
+  - Provide the analysis as a list of short, direct sentences.
   - Is it a secure career path for the next 5-10 years? 
   - What is the growth potential?
-  - If the goal is not secure or future-proof, provide a brief analysis explaining why and suggest 2-3 alternative, more secure career goals.
+  - If the goal is not secure or future-proof, explain why in the analysis and suggest 2-3 alternative, more secure career goals.
   - Fill out the 'futureScope' object accordingly.
 
   Next, based on the user's current skills and career goals, you will generate a roadmap of the most important skills they should learn next, in a logical order.
