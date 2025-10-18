@@ -55,6 +55,9 @@ const prompt = ai.definePrompt({
   name: 'generateSkillsRoadmapPrompt',
   input: {schema: GenerateSkillsRoadmapInputSchema},
   output: {schema: GenerateSkillsRoadmapOutputSchema},
+  config: {
+    temperature: 0,
+  },
   prompt: `You are a career advisor who specializes in creating personalized learning roadmaps. Your goal is to provide a clear, simple, and easy-to-understand plan.
 
   Based on the user's current skills and career goals, you will generate a roadmap of the most important skills they should learn next, in a logical order.
