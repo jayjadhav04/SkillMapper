@@ -37,7 +37,7 @@ const SkillSchema = z.object({
 
 const GenerateSkillsRoadmapOutputSchema = z.object({
   skillsRoadmap: z.array(SkillSchema).describe(
-    'An array of the next 3-5 skills the user should learn, with learning resources for each skill.'
+    'An array containing the next single skill the user should learn to achieve their career goals.'
   ),
 });
 
@@ -55,19 +55,19 @@ const prompt = ai.definePrompt({
   name: 'generateSkillsRoadmapPrompt',
   input: {schema: GenerateSkillsRoadmapInputSchema},
   output: {schema: GenerateSkillsRoadmapOutputSchema},
-  prompt: `You are a career advisor who specializes in creating personalized learning roadmaps.
+  prompt: `You are a career advisor who specializes in creating personalized learning roadmaps. Your goal is to provide a clear, simple, and easy-to-understand plan.
 
-  Based on the user's current skills and career goals, you will generate a roadmap of the next 3-5 skills they should learn.
+  Based on the user's current skills and career goals, you will generate a roadmap for the **single most important skill** they should learn next. Focus on one skill at a time to avoid complexity.
 
-  For each skill, provide:
-  1. A short summary of why it's important for the user's career goals.
-  2. A step-by-step plan of what to study to learn this skill. Start with the absolute basics and progress to more advanced concepts. Each step should be a clear, actionable instruction.
-  3. A list of comma-separated URLs for learning resources.
+  For this single skill, provide:
+  1. A short summary of why it's the most critical next step for the user's career goals.
+  2. A detailed, step-by-step plan of what to study. Start with the absolute basics and progress to more advanced concepts. Each step must be a clear, actionable instruction.
+  3. A list of comma-separated URLs for high-quality learning resources.
 
   Current Skills: {{{currentSkills}}}
   Career Goals: {{{careerGoals}}}
 
-  Skills Roadmap:`,
+  Generate the roadmap for the next skill:`,
 });
 
 const generateSkillsRoadmapFlow = ai.defineFlow(
