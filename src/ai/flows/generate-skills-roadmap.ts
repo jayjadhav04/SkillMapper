@@ -37,7 +37,7 @@ const SkillSchema = z.object({
 
 const GenerateSkillsRoadmapOutputSchema = z.object({
   skillsRoadmap: z.array(SkillSchema).describe(
-    'An array containing the next single skill the user should learn to achieve their career goals.'
+    'An array containing the next single skill the user should learn to achieve their career goals. This array must contain exactly one skill.'
   ),
 });
 
@@ -57,7 +57,7 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateSkillsRoadmapOutputSchema},
   prompt: `You are a career advisor who specializes in creating personalized learning roadmaps. Your goal is to provide a clear, simple, and easy-to-understand plan.
 
-  Based on the user's current skills and career goals, you will generate a roadmap for the **single most important skill** they should learn next. Focus on one skill at a time to avoid complexity.
+  Based on the user's current skills and career goals, you will generate a roadmap for the **single most important skill** they should learn next. The output must contain a roadmap for ONLY ONE skill.
 
   For this single skill, provide:
   1. A short summary of why it's the most critical next step for the user's career goals.
