@@ -9,7 +9,6 @@ import type { GenerateSkillsRoadmapOutput } from '@/ai/flows/generate-skills-roa
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { Badge } from './ui/badge';
 
 interface RoadmapDisplayProps {
@@ -44,22 +43,20 @@ function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: Generat
             isOpen ? 'bg-card/80' : 'bg-card'
         )}
       >
-        <button onClick={onToggle} className="w-full text-left p-4 sm:p-6 cursor-pointer hover:bg-secondary/50 transition-colors">
-          <div className="flex items-center gap-4">
-            <div>
-              <h3 className="text-xl font-semibold text-card-foreground">{skill.skillName}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{skill.skillDescription}</p>
-            </div>
-            <ChevronRight className={cn("ml-auto h-5 w-5 text-muted-foreground transition-transform", isOpen && 'rotate-90')} />
-          </div>
-        </button>
-
-        {isOpen && (
-            <div className="p-4 sm:p-6 border-t border-border space-y-8">
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="p-4 sm:p-6">
+            <div className="flex items-start gap-4">
               <div>
-                <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
+                <h3 className="text-xl font-semibold text-card-foreground">{skill.skillName}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{skill.skillDescription}</p>
+              </div>
+              <button onClick={onToggle} className="ml-auto p-2 -mr-2 -mt-2 shrink-0">
+                <ChevronRight className={cn("h-5 w-5 text-muted-foreground transition-transform", isOpen && 'rotate-90')} />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mt-6">
+              <div>
+                <h4 className="font-semibold text-card-foreground mb-3 flex items-center gap-2 text-md">
                   <ListChecks className="h-5 w-5 text-accent" />
                   Required Skills
                 </h4>
@@ -67,11 +64,12 @@ function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: Generat
                   {skill.requiredSkills.map((reqSkill, reqIndex) => (
                     <Badge key={reqIndex} variant="secondary">{reqSkill}</Badge>
                   ))}
+                  {skill.requiredSkills.length === 0 && <p className="text-sm text-muted-foreground">None</p>}
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
+                <h4 className="font-semibold text-card-foreground mb-3 flex items-center gap-2 text-md">
                   <Library className="h-5 w-5 text-accent" />
                   Important Libraries & Tools
                 </h4>
@@ -79,10 +77,14 @@ function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: Generat
                   {skill.importantLibraries.map((lib, libIndex) => (
                     <Badge key={libIndex} variant="secondary">{lib}</Badge>
                   ))}
+                   {skill.importantLibraries.length === 0 && <p className="text-sm text-muted-foreground">None recommended for beginners</p>}
                 </div>
               </div>
             </div>
-            
+        </div>
+
+        {isOpen && (
+          <div className="p-4 sm:p-6 border-t border-border space-y-8">
             <div>
               <h4 className="font-semibold text-card-foreground mb-4 flex items-center gap-2 text-lg">
                 <Goal className="h-5 w-5 text-accent" />
@@ -225,11 +227,16 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
         y += 20;
         doc.setFontSize(10);
         doc.setTextColor(hexColors.foreground);
-        skill.requiredSkills.forEach(reqSkill => {
-            y = addPageIfNeeded(y);
-            doc.text(`- ${reqSkill}`, margin + 10, y);
-            y+=15;
-        });
+        if (skill.requiredSkills.length > 0) {
+            skill.requiredSkills.forEach(reqSkill => {
+                y = addPageIfNeeded(y);
+                doc.text(`- ${reqSkill}`, margin + 10, y);
+                y+=15;
+            });
+        } else {
+             doc.text("None", margin + 10, y);
+             y+=15;
+        }
         y += 10;
         y = addPageIfNeeded(y);
 
@@ -241,11 +248,16 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
         y += 20;
         doc.setFontSize(10);
         doc.setTextColor(hexColors.foreground);
-        skill.importantLibraries.forEach(lib => {
-            y = addPageIfNeeded(y);
-            doc.text(`- ${lib}`, margin + 10, y);
+        if (skill.importantLibraries.length > 0) {
+            skill.importantLibraries.forEach(lib => {
+                y = addPageIfNeeded(y);
+                doc.text(`- ${lib}`, margin + 10, y);
+                y+=15;
+            });
+        } else {
+            doc.text("None recommended for beginners", margin + 10, y);
             y+=15;
-        });
+        }
         y += 10;
         y = addPageIfNeeded(y);
 
