@@ -24,16 +24,16 @@ export default function Home() {
       </div>
       <footer className="w-full max-w-4xl mt-16 pt-8 border-t border-border text-center text-muted-foreground text-sm">
         <div className="flex justify-center items-center gap-6 mb-4">
-            <a href="https://github.com/your-github-username" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-foreground transition-colors">
+            <a href="https://github.com/jayjadhav04" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-foreground transition-colors">
                 <Github className="h-5 w-5" />
                 <span>GitHub</span>
             </a>
-             <a href="mailto:your.email@example.com" className="flex items-center gap-2 hover:text-foreground transition-colors">
+             <a href="mailto:jaydjadhav1111@gmail.com" className="flex items-center gap-2 hover:text-foreground transition-colors">
                 <Mail className="h-5 w-5" />
                 <span>Email</span>
             </a>
         </div>
-        <p>Created with ❤️ by Jay Jadhav</p>
+        <p>Created by Jay Jadhav</p>
       </footer>
     </main>
   );
