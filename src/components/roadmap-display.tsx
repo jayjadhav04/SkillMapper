@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import jsPDF from 'jspdf';
 import { Badge } from './ui/badge';
-import { Alert, AlertTitle, AlertDescription } from './ui/alert';
+import { Alert, AlertDescription } from './ui/alert';
 
 interface RoadmapDisplayProps {
   roadmap: GenerateSkillsRoadmapOutput;
@@ -198,42 +198,13 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
       const doc = new jsPDF({ orientation: 'p', unit: 'px', format: 'a4' });
       doc.setFont('Inter', 'normal');
 
-      // --- Use browser colors ---
-      const rootStyles = getComputedStyle(document.documentElement);
-      const colors = {
-          primary: rootStyles.getPropertyValue('--primary').trim(),
-          foreground: rootStyles.getPropertyValue('--foreground').trim(),
-          mutedForeground: rootStyles.getPropertyValue('--muted-foreground').trim(),
-          accent: rootStyles.getPropertyValue('--accent').trim(),
-      };
-      
-      const toHex = (hsl: string) => {
-          if (!hsl) return '#000000';
-          const [h, s, l] = hsl.split(' ').map(val => parseFloat(val));
-          const s_norm = s / 100;
-          const l_norm = l / 100;
-          const c = (1 - Math.abs(2 * l_norm - 1)) * s_norm;
-          const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-          const m = l_norm - c / 2;
-          let r = 0, g = 0, b = 0;
-          if (0 <= h && h < 60) { [r, g, b] = [c, x, 0]; }
-          else if (60 <= h && h < 120) { [r, g, b] = [x, c, 0]; }
-          else if (120 <= h && h < 180) { [r, g, b] = [0, c, x]; }
-          else if (180 <= h && h < 240) { [r, g, b] = [0, x, c]; }
-          else if (240 <= h && h < 300) { [r, g, b] = [x, 0, c]; }
-          else if (300 <= h && h < 360) { [r, g, b] = [c, 0, x]; }
-          r = Math.round((r + m) * 255);
-          g = Math.round((g + m) * 255);
-          b = Math.round((b + m) * 255);
-          return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-      };
+      // Hardcode colors for PDF to ensure visibility regardless of theme
       const hexColors = {
-          primary: toHex(colors.primary),
-          foreground: toHex(colors.foreground),
-          mutedForeground: toHex(colors.mutedForeground),
-          accent: toHex(colors.accent),
+          primary: '#2563EB', // blue-600
+          foreground: '#111827', // gray-900
+          mutedForeground: '#6B7280', // gray-500
+          accent: '#7C3AED', // violet-600
       };
-      // --- End color conversion ---
       
       let y = 40;
       const pageHeight = doc.internal.pageSize.height;
