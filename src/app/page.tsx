@@ -1,6 +1,6 @@
 import { RoadmapGenerator } from '@/components/roadmap-generator';
 import { ThemeToggleButton } from '@/components/theme-toggle-button';
-import { Map } from 'lucide-react';
+import { Map, Github, Mail } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -22,6 +22,19 @@ export default function Home() {
         </header>
         <RoadmapGenerator />
       </div>
+      <footer className="w-full max-w-4xl mt-16 pt-8 border-t border-border text-center text-muted-foreground text-sm">
+        <div className="flex justify-center items-center gap-6 mb-4">
+            <a href="https://github.com/your-github-username" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-foreground transition-colors">
+                <Github className="h-5 w-5" />
+                <span>GitHub</span>
+            </a>
+             <a href="mailto:your.email@example.com" className="flex items-center gap-2 hover:text-foreground transition-colors">
+                <Mail className="h-5 w-5" />
+                <span>Email</span>
+            </a>
+        </div>
+        <p>Created with ❤️ by Jay Jadhav</p>
+      </footer>
     </main>
   );
 }
