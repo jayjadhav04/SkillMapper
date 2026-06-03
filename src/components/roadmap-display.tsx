@@ -45,7 +45,7 @@ function FutureScopeAnalysis({ futureScope }: { futureScope: GenerateSkillsRoadm
               </div>
               <ul className="space-y-2">
                   {analysis.map((point, index) => (
-                      <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <li key={index} className="flex items-start gap-3 text-base text-foreground/80 leading-7">
                           <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
                           <span>{point}</span>
                       </li>
@@ -101,8 +101,8 @@ function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: Generat
         <div className="p-4 sm:p-6">
             <div className="flex items-start gap-4">
               <div>
-                <h3 className="text-xl font-semibold text-card-foreground">{skill.skillName}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{skill.skillDescription}</p>
+                <h3 className="text-2xl font-bold text-card-foreground">{skill.skillName}</h3>
+                <p className="text-base text-foreground/80 mt-2 leading-7">{skill.skillDescription}</p>
               </div>
               <button onClick={onToggle} className="ml-auto p-2 -mr-2 -mt-2 shrink-0">
                 <ChevronRight className={cn("h-5 w-5 text-muted-foreground transition-transform", isOpen && 'rotate-90')} />
@@ -149,7 +149,9 @@ function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: Generat
                 {skill.learningSteps.map((step, stepIndex) => (
                   <div key={stepIndex} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                    <p className="text-card-foreground/90">{step}</p>
+                    <p className="text-base leading-7 text-card-foreground">
+                    {step}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -170,7 +172,7 @@ function RoadmapStep({ skill, index, total, isOpen, onToggle }: { skill: Generat
                       className="flex items-center gap-2 text-primary hover:underline underline-offset-4 transition-colors group"
                     >
                       <Link className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">{resource}</span>
+                      <span className="break-all text-base">{resource}</span>
                       <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </a>
                   </li>
