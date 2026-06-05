@@ -12,6 +12,11 @@ This project was developed using **Firebase Studio AI** with advanced **Prompt E
 
 ---
 
+# 🚀 Live Demo
+🔗 https://skillmapper-jayjadhav.vercel.app/
+
+---
+
 # 🌟 Features
 
 ✅ AI-generated personalized learning roadmaps  
