@@ -211,7 +211,7 @@ Contributions are welcome!
 
 # 👨‍💻 Author
 
-**Jay Dnyaneshwar Jadhav**
+**Jay Jadhav**
 
 - GitHub: [jayjadhav04](https://github.com/jayjadhav04)
 - LinkedIn: [jayjadhav04](https://www.linkedin.com/in/jayjadhav04)
