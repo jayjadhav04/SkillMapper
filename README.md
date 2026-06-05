@@ -61,37 +61,37 @@ Then it creates:
 
 ## 🔹 Home Page (Dark Mode)
 
-![Dark Mode](Screenshot/home_page.png)
+![Dark Mode](Screenshot/home_page2.png)
 
 ---
 
 ## 🔹 Home Page (Light Mode)
 
-![Light Mode](Screenshot/Screenshot2.jpg)
+![Light Mode](Screenshot/home_page.png)
 
 ---
 
 ## 🔹 AI Generating Learning Path
 
-![Generating Roadmap](Screenshot/Screenshot3.jpg)
+![Generating Roadmap](Screenshot/ai_processing.png)
 
 ---
 
-## 🔹 Personalized Learning Roadmap
+## 🔹 Future Scope Analysis
 
-![Roadmap](Screenshot/Screenshot4.jpg)
+![Future Scope](Screenshot/future_scope.png)
 
 ---
 
 ## 🔹 Step-by-Step Learning Sections
 
-![Learning Sections](Screenshot/Screenshot5.jpg)
+![Learning Sections](Screenshot/roadmap_overview.png)
 
 ---
 
-## 🔹 Advanced Learning Roadmap
+## 🔹 Detailed Learning Plan
 
-![Advanced Roadmap](Screenshot/Screenshot6.jpg)
+![Detailed Learning Plan](Screenshot/detailed_learning_plan.png)
 
 ---
 
@@ -214,7 +214,7 @@ Contributions are welcome!
 **Jay Dnyaneshwar Jadhav**
 
 - GitHub: [jayjadhav04](https://github.com/jayjadhav04)
-
+- LinkedIn: [jayjadhav04](https://www.linkedin.com/in/jayjadhav04)
 ---
 
 
