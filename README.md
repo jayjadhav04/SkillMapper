@@ -61,7 +61,7 @@ Then it creates:
 
 ## 🔹 Home Page (Dark Mode)
 
-![Dark Mode](Screenshot/Screenshot1.jpg)
+![Dark Mode](Screenshot/home_page.png)
 
 ---
 
